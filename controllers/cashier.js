@@ -110,7 +110,7 @@ const getTransaksi = async (req, res) => {
 
 const addDetailKerusakan = async (req, res) => {
     try {
-        const { transaksi_id, detail_transaksi } = req.body
+        const { transaksi_id, detail_kerusakan } = req.body;
 
         // Cari transaksi berdasarkan transaksi_id
         const existingTransaksi = await prisma.transaksi.findUnique({
@@ -119,55 +119,52 @@ const addDetailKerusakan = async (req, res) => {
                 mobil: true,
                 detail_kerusakan: true,
             },
-        })
+        });
 
         if (!existingTransaksi) {
             return res.status(404).json({
                 success: false,
                 message: "Transaksi tidak ditemukan",
-            })
+            });
         }
+
+        const kerusakanData = detail_kerusakan.map((item) => ({
+            kerusakan: item.kerusakan,
+            harga_perbaikan: item.harga_perbaikan,
+        }));
+
+        const totalHarga = existingTransaksi.total_harga + kerusakanData.reduce((total, item) => total + item.harga_perbaikan, 0);
 
         const updatedTransaksi = await prisma.transaksi.update({
             where: { transaksi_id },
             data: {
-                tanggal: new Date(detail_transaksi.tanggal),
-                total_harga: detail_transaksi.total_harga,
-                status_selesai: detail_transaksi.status_selesai,
-                status_pembayaran: detail_transaksi.status_pembayaran,
-                mobil: {
-                    update: {
-                        jenis_mobil: detail_transaksi.mobil.jenis_mobil,
-                        plat_nomor: detail_transaksi.mobil.plat_nomor,
-                    },
-                },
+                total_harga: totalHarga,
                 detail_kerusakan: {
-                    create: detail_transaksi.detail_kerusakan.map((item) => ({
-                        kerusakan: item.kerusakan,
-                        harga_perbaikan: item.harga_perbaikan,
-                    })),
+                    createMany: {
+                        data: kerusakanData,
+                    },
                 },
             },
             include: {
                 mobil: true,
                 detail_kerusakan: true,
             },
-        })
+        });
 
         res.json({
             success: true,
             message: "Detail kerusakan berhasil ditambahkan pada transaksi",
             result: updatedTransaksi,
-        })
+        });
     } catch (error) {
-        console.error(error)
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Terjadi kesalahan dalam menambahkan detail kerusakan",
             error: error.message,
-        })
+        });
     }
-}
+};
 
 const updateStatusTransaksi = async (req, res) => {
     try {
