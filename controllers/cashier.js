@@ -82,6 +82,9 @@ const getTransaksi = async (req, res) => {
                     },
                 },
             },
+            orderBy: {
+                transaksi_id: 'asc',
+            },
         })
 
         const formattedTransaksiData = transaksiData.map((transaksi) => ({
