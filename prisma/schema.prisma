@@ -11,15 +11,15 @@ datasource db {
 }
 
 model Mobil {
-  mobil_id    Int         @id @default(autoincrement())
+  mobil_id    Int        @id @default(autoincrement())
   jenis_mobil String
   plat_nomor  String
-  transaksi   Transaksi[]
+  transaksi   Transaksi?
 }
 
 model Transaksi {
   transaksi_id      Int                @id @default(autoincrement())
-  mobil_id          Int
+  mobil_id          Int                @unique
   tanggal           DateTime
   total_harga       Float
   status_selesai    String
