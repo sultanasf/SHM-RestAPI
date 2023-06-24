@@ -11,21 +11,21 @@ datasource db {
 }
 
 model Mobil {
-  mobil_id    Int    @id @default(autoincrement())
+  mobil_id    Int         @id @default(autoincrement())
   jenis_mobil String
   plat_nomor  String
   transaksi   Transaksi[]
 }
 
 model Transaksi {
-  transaksi_id    Int              @id @default(autoincrement())
-  mobil_id        Int
-  tanggal         DateTime
-  total_harga     Float
-  status_selesai  String
+  transaksi_id      Int                @id @default(autoincrement())
+  mobil_id          Int
+  tanggal           DateTime
+  total_harga       Float
+  status_selesai    String
   status_pembayaran String
-  mobil           Mobil            @relation(fields: [mobil_id], references: [mobil_id])
-  detail_kerusakan Detail_Kerusakan[]
+  mobil             Mobil              @relation(fields: [mobil_id], references: [mobil_id])
+  detail_kerusakan  Detail_Kerusakan[]
 }
 
 model Detail_Kerusakan {
